@@ -109,11 +109,10 @@ exports.updateShipmentStatus = async (req, res, next) => {
             return next(new ErrorResponse(`Shipment not found with id of ${req.params.id}`, 404));
         }
 
-        shipment = await Shipment.findByIdAndUpdate(
-            req.params.id,
-            { status },
-            { new: true, runValidators: true }
-        );
+        shipment.updatedStatus.push({ shipment: status });
+        shipment.status = status;
+
+        await shipment.save();
 
         res.status(200).json({
             success: true,
@@ -144,6 +143,37 @@ exports.updatePaymentStatus = async (req, res, next) => {
         shipment = await Shipment.findByIdAndUpdate(
             req.params.id,
             { paymentStatus },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            data: shipment
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+// @desc      Update shipment amount
+// @route     PUT /api/admin/shipments/:id/amount
+// @access    Private/Admin
+exports.updateAmount = async (req, res, next) => {
+    try {
+        const { amount } = req.body;
+
+        if (amount< 0) {
+            return next(new ErrorResponse('Please provide a valid amount', 400));
+        }
+
+        let shipment = await Shipment.findById(req.params.id);
+
+        if (!shipment) {
+            return next(new ErrorResponse(`Shipment not found with id of ${req.params.id}`, 404));
+        }
+
+        shipment = await Shipment.findByIdAndUpdate(
+            req.params.id,
+            { amount },
             { new: true, runValidators: true }
         );
 

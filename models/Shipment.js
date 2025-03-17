@@ -1,5 +1,35 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
+
+
+const UpdatedShipmentSchema = new mongoose.Schema({
+    shipment: {
+        type: String,
+        enum: [
+            "order-received",
+            "awaiting-pickup",
+            "picked-up",
+            "in-transit",
+            "arrived-at-sorting-facility",
+            "departed-from-sorting-facility",
+            "out-for-delivery",
+            "delivered",
+            "delivery-attempted",
+            "failed-delivery",
+            "address-issue",
+            "held-at-customs",
+            "delayed",
+            "damaged-in-transit",
+            "return-initiated",
+            "return-in-transit",
+            "return-received",
+            "refund-processed",
+            "cancelled"
+        ],
+        required: true
+    },
+    timestamp: {type: Date, default: Date.now},
+});
 
 const ShipmentSchema = new mongoose.Schema({
     trackingId: {
@@ -11,6 +41,10 @@ const ShipmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    amount: {
+        type: Number,
+        default: 0
     },
     source: {
         address: {
@@ -94,6 +128,7 @@ const ShipmentSchema = new mongoose.Schema({
         ],
         default: 'order-received'
     },
+    updatedStatus: [UpdatedShipmentSchema],
     paymentStatus: {
         type: String,
         enum: ['pending', 'successful'],
@@ -115,8 +150,8 @@ const ShipmentSchema = new mongoose.Schema({
 });
 
 // Update timestamp on update
-ShipmentSchema.pre('findOneAndUpdate', function() {
-    this.set({ updatedAt: Date.now() });
+ShipmentSchema.pre('findOneAndUpdate', function () {
+    this.set({updatedAt: Date.now()});
 });
 
 module.exports = mongoose.model('Shipment', ShipmentSchema);

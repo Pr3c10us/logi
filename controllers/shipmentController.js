@@ -24,7 +24,7 @@ exports.createShipment = async (req, res, next) => {
 // @access    Private
 exports.getShipments = async (req, res, next) => {
     try {
-        const shipments = await Shipment.find({ user: req.user.id });
+        const shipments = await Shipment.find({user: req.user.id});
 
         res.status(200).json({
             success: true,
@@ -66,7 +66,7 @@ exports.getShipment = async (req, res, next) => {
 // @access    Public
 exports.trackShipment = async (req, res, next) => {
     try {
-        const shipment = await Shipment.findOne({ trackingId: req.params.trackingId });
+        const shipment = await Shipment.findOne({trackingId: req.params.trackingId});
 
         if (!shipment) {
             return next(new ErrorResponse(`Shipment not found with tracking ID of ${req.params.trackingId}`, 404));
@@ -78,20 +78,22 @@ exports.trackShipment = async (req, res, next) => {
             data: {
                 id: shipment.id,
                 trackingId: shipment.trackingId,
+                amount: shipment.amount,
                 status: shipment.status,
                 payment: shipment.paymentStatus,
                 source: {
-                    address:shipment.source.address,
+                    address: shipment.source.address,
                     city: shipment.source.city,
                     state: shipment.source.state,
                     country: shipment.source.country
                 },
                 destination: {
-                    address:shipment.destination.address,
+                    address: shipment.destination.address,
                     city: shipment.destination.city,
                     state: shipment.destination.state,
                     country: shipment.destination.country
                 },
+                updatedStatus: shipment.updatedStatus,
                 createdAt: shipment.createdAt,
                 updatedAt: shipment.updatedAt
             }
