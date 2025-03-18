@@ -186,6 +186,30 @@ exports.updateAmount = async (req, res, next) => {
     }
 };
 
+// @desc      Delete shipment
+// @route     DELETE /api/admin/shipments/:id
+// @access    Private/Admin
+exports.deleteShipment = async (req, res, next) => {
+    try {
+        let shipment = await Shipment.findById(req.params.id);
+
+        if (!shipment) {
+            return next(new ErrorResponse(`Shipment not found with id of ${req.params.id}`, 404));
+        }
+
+        await Shipment.findByIdAndDelete(
+            req.params.id,
+            {}
+        );
+
+        res.status(200).json({
+            success: true,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 // @desc      Create admin user
 // @route     POST /api/admin/create
 // @access    Private/Admin

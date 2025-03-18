@@ -3,9 +3,10 @@ const {
     getAllShipments,
     updateShipmentStatus,
     updatePaymentStatus,
-    createAdmin, updateAmount
+    createAdmin,
+    updateAmount, deleteShipment
 } = require('../controllers/adminController');
-const { protect, isAdmin } = require('../middleware/auth');
+const {protect, isAdmin} = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use(protect);
 router.use(isAdmin);
 
 router.get('/shipments', getAllShipments);
+router.delete('/shipments/:id', deleteShipment);
 router.put('/shipments/:id/status', updateShipmentStatus);
 router.put('/shipments/:id/payment', updatePaymentStatus);
 router.put('/shipments/:id/amount', updateAmount);
