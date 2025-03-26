@@ -91,6 +91,61 @@ exports.getAllShipments = async (req, res, next) => {
         next(err);
     }
 };
+// @desc      Get all shipments (admin)
+// @route     GET /api/admin/shipments
+// @access    Private/Admin
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        // Build query
+        let query;
+
+
+        // Finding resource
+        if (req.query.name) {
+            query = User.find({ name: { $regex: req.query.name, $options: 'i' } });
+        } else {
+            query = User.find();
+        }
+
+        // Pagination
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 25;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const total = await User.countDocuments();
+
+        query = query.skip(startIndex).limit(limit);
+
+        // Executing query
+        const users = await query;
+
+        // Pagination result
+        const pagination = {};
+
+        if (endIndex < total) {
+            pagination.next = {
+                page: page + 1,
+                limit
+            };
+        }
+
+        if (startIndex > 0) {
+            pagination.prev = {
+                page: page - 1,
+                limit
+            };
+        }
+
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            pagination,
+            data: users
+        });
+    } catch (err) {
+        next(err);
+    }
+};
 
 // @desc      Update shipment status
 // @route     PUT /api/admin/shipments/:id/status
